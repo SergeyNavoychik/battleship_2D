@@ -1,0 +1,147 @@
+@import url(reset.css);
+body{
+    background-image: url(../images/bg.jpg);
+    background-size: cover;
+}
+.wrapper{width: 75%; margin: 10px auto;}
+#alert-message{
+    margin-left: 12%;
+    height: 45px;
+}
+    #alert-message p{
+        text-align: center;
+        font-size: 20px;
+        background: #ff2825;
+        color: #fff;
+        vertical-align: middle;
+    }
+#switch_on_sound{
+    padding: 5px;
+    background: #61e4d8;
+    color: #6933af;
+    font-style: italic;
+    font-weight: bold;
+    position: absolute;
+    right: 10px;
+}
+#game{
+    display: flex;
+}
+    #game-field{
+        padding: 4px 55px 0px 0px;
+        position: relative;
+        background: url(../images/sea.jpg) no-repeat center center;
+        background-size: cover;
+        width: 45%;
+    }
+    #game-field td{
+        cursor: pointer;
+		text-align: center;
+        vertical-align: middle;
+        width: 55px;
+        height: 55px;
+        border: 2px solid #000;
+        background: rgba(0,0,0, .3);
+    }
+    #game-field tr td:first-child, #game-field tr:last-child td{
+        border: none;
+        background: none!important;
+        color: #000!important;
+    }
+    .show-results{
+        margin-left: 50px;
+        margin-top: 56px;
+    }
+        .show-results p{
+            font-size: 20px;
+            margin: 15px 0;
+        }
+        .show-results h1{
+            font-size: 28px;
+            text-align: center;
+            color: #B73B3D;
+        }
+#make-shot{margin-top: 20px;}
+    #make-shot input[type = text]{
+        width: 300px;
+        padding: 10px;
+        background: #f7fbfa;
+        border-radius: 3px;
+        border: 1px solid;
+    }
+    #make-shot input[type = button]{
+        padding: 10px;
+        border-radius: 3px;
+        background: rgba(162, 1, 1, 0.77);
+        color: #fff;
+        cursor: pointer;
+    }
+#restart{
+    display: block;
+    width: 75%;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 3px;
+    background: #cac9de;
+    font-size: 18px;
+    color: #7d0b0b;
+    font-weight: bold;
+    cursor: pointer;
+}
+/*==============VIEW MODEL===============*/
+.hit-field{
+    background: url("../images/ship_hit.jpg") no-repeat center center!important;
+    background-size: cover!important;
+}
+.miss-field{
+    background: url("../images/miss.jpg") no-repeat center center!important;
+    background-size: cover!important;
+}
+
+/*=========popup you win===============*/
+#you_win{
+    width: 40%;
+    height: 300px;
+    background: url(../images/win_bg.jpg) no-repeat center center;
+    background-size: cover;
+    position: fixed;
+    top: 24%;
+    left: 32%;
+    display: none;
+    z-index: 3;
+}
+#you_win h1{
+    font-size: 45px;
+    color: #ff6269;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 3;
+}
+#close{
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: url("../images/close_btn.png");
+    background-size: contain;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

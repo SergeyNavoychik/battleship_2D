@@ -1,5 +1,4 @@
 
-
 /*================VIEW======================*/
 var view = {
     btnSoundEffectsPress: false,
@@ -25,9 +24,9 @@ var view = {
     },
     showStatistic: function (msgShot, msgHit) {
         var  countShot = $('#count-shot');
-        var  hitPersentage = $('#hit-persentage');
+        var  hitPersents = $('#hit-persentage');
         countShot.text(msgShot);
-        hitPersentage.text(msgHit);
+        hitPersents.text(msgHit);
     },
     switchOnSound: function() {
         if(!this.btnSoundEffectsPress) {
@@ -47,9 +46,9 @@ var view = {
             this.audio.autoplay = true;
         }
     },
-    closePopupWin: function () {
-        $('#you_win').css('display', 'none');
-            this.audio.pause();
+    popupWin: function () {
+        $('#you_win').toggle();
+        this.audio.pause();
     }
 }
 
@@ -120,7 +119,7 @@ var controller = {
                         --model.countShips;                           // Уменьшаем кол-во оставшихся кораблей
                     }
                 }
-                else{ break;}                                     // если есть поцизия в кот. еще не попали, переходим к след. кораблю
+                else{ break;}                                         // если есть поцизия в кот. еще не попали, переходим к след. кораблю
             }
             countHitOneShip = 0;
         }
@@ -133,11 +132,11 @@ var controller = {
                 if (!this.alreadyShot(shotPosition)) {                      /* проверяем стреляли по этой позиции, или нет*/
                     view.playSound('audio/shot.mp3');
                     ++model.countOfAttempt;
-                    if (this.isHit(shotPosition)) {
-                        this.isSunkShip();
+                    if (this.isHit(shotPosition)) {                         // проверяем попали, или нет
+                        this.isSunkShip();                                  // проверяем поторили корабль, или нет
                         if (model.countShips == 0) {
                             setTimeout('view.alertMessage("Игра окончена, Вы победили!")', 500);
-                            setTimeout("$('#you_win').css('display', 'block')", 2000);
+                            setTimeout("view.popupWin()", 2000);
                             setTimeout("view.playSound('audio/win.mp3')", 2000);
                             model.isSunk = true;
                             view.showStatistic(model.countOfAttempt, Math.round((model.countOfHits / model.countOfAttempt) * 100) + "%");
@@ -153,49 +152,48 @@ var controller = {
             }
         }
         else {
-            view.alertMessage("Игра окончена, нажмите 'Играть еще', что бы начать сначала");
+            view.alertMessage("Игра окончена, нажмите 'Начать сначала', что бы повторить");
         }
     },
     fireClickOnField: function (shotPosition) {
         if (!model.isSunk) {
-                if (!this.alreadyShot(shotPosition)) {                      /* проверяем стреляли по этой позиции, или нет*/
-                    view.playSound('audio/shot.mp3');
-                    ++model.countOfAttempt;
-                    if (this.isHit(shotPosition)) {
-                        this.isSunkShip();
-                        if (model.countShips == 0) {
-                            setTimeout('view.alertMessage("Игра окончена, Вы победили!")', 500);
-                            setTimeout("$('#you_win').css('display', 'block')", 2000);
-                            setTimeout("view.playSound('audio/win.mp3')", 2000);
-                            model.isSunk = true;
-                            view.showStatistic(model.countOfAttempt, Math.round((model.countOfHits / model.countOfAttempt) * 100) + "%");
-                        }
-                    }
-                    else {
-                         view.miss(shotPosition);
+            if (!this.alreadyShot(shotPosition)) {                      /* проверяем стреляли по этой позиции, или нет*/
+                view.playSound('audio/shot.mp3');
+                ++model.countOfAttempt;
+                if (this.isHit(shotPosition)) {
+                    this.isSunkShip();
+                    if (model.countShips == 0) {
+                        setTimeout('view.alertMessage("Игра окончена, Вы победили!")', 500);
+                        setTimeout("view.popupWin()", 2000);
+                        setTimeout("view.playSound('audio/win.mp3')", 2000);
+                        model.isSunk = true;
+                        view.showStatistic(model.countOfAttempt, Math.round((model.countOfHits / model.countOfAttempt) * 100) + "%");
                     }
                 }
                 else {
-                    setTimeout('view.alertMessage("Введите новую позицию выстрела")', 2000);
+                    view.miss(shotPosition);
                 }
-
+            }
+            else {
+                setTimeout('view.alertMessage("Введите новую позицию выстрела")', 2000);
+            }
         }
         else {
-            view.alertMessage("Игра окончена, нажмите 'Играть еще', что бы начать сначала");
+            view.alertMessage("Игра окончена, нажмите 'Начать сначала', что бы повторить");
         }
     },
     restart: function () {
         view.startField();
         view.showStatistic('','');
         view.alertMessage('');
+        model.arrayField = [[],[],[],[],[],[],[]];
         model.madeShots = new Array();
-		model.hitArray = [new Array(3),new Array(3), new Array(3),new Array(3)];
+        model.hitArray = [new Array(3),new Array(2), new Array(2),new Array(1)];
         model.countOfAttempt = 0;
         model.countOfHits = 0;
         model.isSunk = false;
         model.countShips = 4;
         model.shipPosition = [[],[],[],[]];
-        model.arrayRow = [];
         model.setPosition();
     }
 }
@@ -203,41 +201,87 @@ var controller = {
 /*=============================MODEL======================*/
 
 var model = {
-    shipPosition: [[],[],[],[]],
-    hitArray: [new Array(3),new Array(3), new Array(3),new Array(3)],   /*массив попаданий*/
-    madeShots: new Array(),                             /*массив позиций по которым уже стреляли*/
-    arrayRow: [],                                     // массив для значений ряда, на которых уже есть корабли
+    shipPosition: [[],[],[],[]],                                        //позиции кораблей
+    hitArray: [new Array(3),new Array(2), new Array(2),new Array(1)],   /*массив попаданий*/
+    madeShots: new Array(),                                             /*массив позиций по которым уже стреляли*/
+    directionSetShips: 0,                                               //направление расстановки, 1 горизонталь, 0 по вертикали
     countOfAttempt: 0,
     countOfHits: 0,
     countShips: 4,
-    countDesk: 3,
+    countDeck: [3,2,2,1],                                               // количество палуб корабля
     isSunk: false,
-    deleteCollision: function (row) {
-        for( var k = 0; k < model.arrayRow.length; ++k){
-            if(model.arrayRow[k] == row){
-                row = String(Math.floor(Math.random()*7));
-                k = -1;
+    arrayField: [[],[],[],[],[],[],[]],     // массив для проверки наличия корабля на текущей позиции, 1 если есть корабль, иначе 0
+    tmpShipPos: [],                                                     // временная позиция корабля
+    row: 0,                                                             // значение строки
+    column: [],                                                         // значение столбца
+    setNewPosition: function (curPos) {
+        var row,
+            column,
+            tmpColumn;
+        row = (String(Math.floor(Math.random()*7)));
+        column = String(Math.floor(Math.random()*7));
+        tmpColumn = column;
+        for( var j = 0; j < this.countDeck[curPos]; ++j){
+            this.tmpShipPos[j] = row + column;
+            if( tmpColumn > 4){                                  // если значения ячейни больше 4, то расставляем влево, что бы
+                --column;                                       // не выйти за границы поля
+            }
+            else{
+                ++column;
             }
         }
-        model.arrayRow.push(row);
-        return row;
+    },
+    getPositionParams: function () {                            //разбиваем полученную позицию, на значение ряда и столбца
+        var tmpPos = [];
+        for( var i = 0; i < this.tmpShipPos.length; ++i){
+            tmpPos = this.tmpShipPos[i].split('');
+            this.column[i] = tmpPos[1];
+        }
+        this.row = tmpPos[0];
+
+    },
+    ifCollision: function () {
+        this.getPositionParams();
+        for( var j = 0; j < this.column.length; ++j){
+            if (this.directionSetShips){
+                if(this.arrayField[this.row][this.column[j]] == 1){
+                    return true;
+                }
+            }
+            else {
+                if(this.arrayField[this.column[j]][this.row] == 1){
+                    return true;
+                }
+            }
+        }
+        return false;
     },
     setPosition: function () {
-        var row,
-            cell;
         for( var i = 0; i < this.countShips; ++i){
-            var tmpRow =  String(Math.floor(Math.random()*7));
-            row = this.deleteCollision(tmpRow);
-            cell = String(Math.floor(Math.random()*7));
-            var tmpCell = cell;
-            for( var j = 0; j < this.countDesk; ++j){
-                this.shipPosition[i][j] = row+cell;
-                if( tmpCell > 4){                           // если значения ячейни больше 4, то расставляем влево, что бы
-                    --cell;                                       // не выйти за границы поля
+            this.directionSetShips = Math.floor(Math.random()*2);
+            console.log(this.directionSetShips);
+            this.tmpShipPos.length = this.countDeck[i];
+            if(this.directionSetShips){                             //если 1 расставляем по горизонтали, иначе по вертикали
+                this.setNewPosition(i);
+                while(this.ifCollision()){
+                    this.setNewPosition(i);
                 }
-                else{
-                    ++cell;
-                    }
+                this.getPositionParams();
+                for( var j = 0; j < this.countDeck[i]; ++j){
+                    this.shipPosition[i][j] = this.row+this.column[j];
+                    this.arrayField[+this.row][this.column[j]] = 1;
+                }
+            }
+            else{
+                this.setNewPosition(i);
+                while(this.ifCollision()){
+                    this.setNewPosition(i);
+                }
+                this.getPositionParams();
+                for( var j = 0; j < this.countDeck[i]; ++j){
+                    this.shipPosition[i][j] = this.column[j] + this.row;
+                    this.arrayField[+this.column[j]][this.row] = 1;
+                }
             }
         }
         console.log(model.shipPosition);
@@ -270,7 +314,7 @@ $(document).ready(function () {
         view.switchOnSound();
     });
     btnClosePopupWin.on('click',function () {
-        view.closePopupWin();
+        view.popupWin();
     });
 })
 
